@@ -1,91 +1,134 @@
 # Cloud Classification For Weather Forecast
 
-# 프로젝트 개요
+# :speech_balloon: What is "Cloude Classification For Weather Forecast"?
 
-- **기간** : 2023.04.01 ~ 2023.04.20
+1. 본 프로젝트는 기상예보의 실시간 정확도를 좀더 높히고자 하는 목적을 가지고 있다.
+2. 현재 초단기 기상예보의 경우 '기상 예보관' 이라는 인적 요인을 필요로 하며 실시간으로 관측을 하는 역할이다.
+3. 예보관의 주관에만 의존하기 보다 AI모델을 적용시켜 예보관을 도와주고자 하여 만든 프로젝트이다. 
+
+## :date:Project Planning
+
+- **기간** : 2023.04.01 ~ 2023.04.21 (약 3주)
 - **인원 구성** : 3명
-- **주요업무 및 상세역할**
+
+- **## :boy: My part**
     - Adaptive Binarization을 적용시킨 **Custom Dataset 생성**
-    - **Dataset Annotation** 및 Gray-Scaling, Histogram Equalization, Zero-Centering를 적용하여 **데이터 전처리**
+    - **Dataset Annotation** 및 Gray-Scaling, Histogram Equalization, Zero-Centering를 적용하여 **데이터 전처리 작업**
     - 모델 복잡도에 따른 **모델 선정** 및 Anchor Box, max batch 조정을 통한 Yolo **모델 핸들링**
-- **사용언어 및 개발환경** : Google colab Pro+, Python, Numpy, Pandas, Matplotlib, OpenCV, VSCode, Mac OS, Slack
+- **사용언어 및 개발환경** : Google colab Pro+, Python, Numpy, Pandas, Matplotlib, OpenCV
 
-## 문제 정의
-
+##  :boom:문제 정의
+### 기상청 정확도가 90%라고?
+---
 <img width="1044" alt="스크린샷 2023-07-27 오후 1 23 15" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/f9356461-9c71-49fe-af15-af9ff966d756">
 
-- 현재 기상청에서는 AI 인공지능을 이용한 수치형 table 데이터 통계모델을 사용하여 90%가 넘는 정확도로 날씨를 예측하지만, 경찰서에 도둑이 들었다는 말이나 소방서에 불이 났다는 말과 같은 맥락처럼 날씨 예보에 높은 정확도를 가지고 있는 기상청의 운동회 날에 비가 왔다는 말이 있다.
+- 기상청은 현재 수치형 Table 모델을 가지고 날씨를 예측 하고 있고 이 정확도는 무려 90%이다.
+- 하지만 시민들이 느끼기에는 90%라기에는 갑작스러운 기상변화를 한번쯤은 느꼈을 것이다
+- 그 이유는 기상을 예측이 일반 사람이 생각하는 것보다 세분화 되어있다는 것이다.
+- 날씨를 예측하는데 있어서 장기, 단기, 초단기와 같이 세분화 되어있다.
+- 90%의 정확도는 장기예보에 해당하는 정확도이고 초단기 예보 (약 10분 이내)는 높은 정확도를 보여주지 않는다.
+
 
 <img width="1037" alt="스크린샷 2023-07-27 오후 1 23 37" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/ed569f82-0608-4fde-8355-05f01bffc81a">
 
-- 이러한 의문점을 확인해 본 결과 일기예보는 총 4분기로 나뉘어져 있었으며, 일기예보에 대한 90%가 넘는 정확도는 장기-중기의 일기예보를 나타낸 것으로 확인할 수 있었다. 이를 통해 10분 간격의 날씨를 분석해야 하는 초단기 일기 예보관은 AI 인공지능 수치형 모델이 자동화가 되어 있음에도 자료를 분석해야 하는 역할이 중요하기에 큰 부담이 존재한다.
+- 초단기 일기예보의 경우 실시간으로 변하는 요인들이 너무많기에 AI의 힘만으로는 예측이 어렵다.
+- 따라서 예보관이라는 전문가가 필요하게 되고 예보관이 하는일은 [**그래프 분석**, **구름이 특정 모양이 되었을때 바로 포착해야 하는 것**]과 같은 작업들이 필요하다.
 
-## 해결 방안
 
-### <프로젝트 목적>
+## How to solve this problem?
 
-- Object Detection을 통해 데이터 전처리 경험과 모델의 성능을 개선하기 위해 모델의 구조를 파악함과 동시에 모델마다 Attention을 다르게 하여 데이터의 난이도에 적합한 모델의 복잡도나 전처리한 데이터를 각각의 모델에 적용시켜 mAP Score를 평가하면서 정확도 높은 구름 패턴 분류가 가능하도록 모델링 경험
+### <Object detection 방법>
 
-### <프로젝트 내용>
+- 객체탐지라는 기술을 통하여 실시간으로 위성위에서 움직이는 구름을 포착하여 예보관이 실시간으로 체크를 하지 않도록 해준다
+- 인간이 분별하기 힘든 여러 구름을 다양한 전처리를 통해서 정확도를 높히는 방법을 이용한다
+- 수만장의 위성사진을 확보하여 직접 라벨링 작업을 하여 학습을 진행한다.
 
-- 팀 프로젝트를 통해 AI 인공지능 수치 모델 이외에 딥러닝 서비스를 제공하기 위하여 인공위성 사진으로부터 날씨와 연관된 구름의 형태를 분석하여 초단기 일기 예보관에게 보조 수단으로서 기상에 대한 분석 정보를 제공
+
+### <무엇을 얻을 수 있나?>
+
+- AI 인공지능 수치 모델 이외에 딥러닝 서비스를 제공하기 위하여 인공위성 사진으로부터 날씨와 연관된 구름의 형태를 분석하여 초단기 일기 예보관에게 보조 수단으로서 기상에 대한 분석 정보를 제공
 
 
 ## 데이터 설명
 
-- **데이터** : NASA WORLD VIEW 5,050장 ( 출처 : Roboflow )
+- **데이터** : NASA WORLD VIEW 35,050장
     
     <img width="943" alt="스크린샷 2023-07-27 오후 1 24 14" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/ccf49809-2c33-4540-9cb5-02bac1cd55cb">
-
-    - 데이터셋의 Image Scale은 2,100x1,400이며, Label Type은 Bounding Box와 Sugar, Gravel, Fish, Flower 총 4개의 Class로 이루어져 있고, 데이터셋에는 인공위성 지지대와 태양빛 반사 등의 Noise가 존재하였다.
     
-- **균형적인 Label 분포**
+    - image size: 2100 x 1400
+
+    - Label Type: Sugar, Gravel, Fish, Flower
+
+    - Noise: 인공위성 지지대, 태양빛 반사 
+
+<br>
+
+    
+- **Label 분포 그래프**
 
     <img width="618" alt="스크린샷 2023-07-27 오후 1 24 35" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/bde033b1-4d17-4629-a9ba-2d8c0280a5e7">
 
-- **구름 데이터 설명**
+<br>
+
+- **날씨 예보와 관련된 구름 규모**
 
     <img width="621" alt="스크린샷 2023-07-27 오후 1 25 02" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/9fc99e32-69c7-4534-8e5c-f97b34c64e55">
 
     - 구름의 규모는 총 4 구간으로 나뉘며, 규모 중에서도 날씨와 가장 연관성이 큰 **Meso-manufacturing** 구간을 기준으로 하여 4개의 Class를 분류한다.
+
+
     - **Sugar[meso-γ]** : 강수와 연관성이 거의 없고, 설탕을 뿌린 모양과 유사한 Sugar 구름은 여러 입자로 이루어진 미세 구름이며, 낮은 고도에서 관측된다.
     - **Gravel[meso-β]** : 주로 대기의 불안정에 의해 발생하기에 강수와 연관성이 있고, 돌풍으로 인하여 Sugar 구름에서 파생된 Gravel 구름은 Sugar 구름에 비해 입도가 크고 밝다.
     - **Flower[meso-β]** : 안정적인 기상 조건에서 발생하며, 규칙적으로 넓게 퍼져 있는 패턴의 Flower 구름은 Gravel 구름이 합쳐진 형태이다.
     - **Fish[meso-α]** : 갑작스러운 폭우와 비가 있을 때의 형상으로, 구름 사이에 뼈대와 같은 모양이 관측된다. 또한, Sugar와 Gravel보다 밝은 Fish 구름은 태풍으로의 발전 가능성이 존재하며, 열대 저기압이 발생하는 곳에서 많이 관측된다.
 
-<img width="1046" alt="스크린샷 2023-07-27 오후 1 25 55" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/37d40ade-e5ea-497b-886d-4dd650b99fd5">
+<img width="1008" alt="스크린샷 2023-07-27 오후 1 25 55" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/37d40ade-e5ea-497b-886d-4dd650b99fd5">
 
 - **Dataset의 Bbox와 Class**
-    <img width="626" alt="스크린샷 2023-07-27 오후 1 26 19" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/226fea58-d68c-4ada-8584-a5966d8afc14">    
+    <img width="1008" alt="스크린샷 2023-07-27 오후 1 26 19" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/226fea58-d68c-4ada-8584-a5966d8afc14">    
 
-## 데이터 전처리
+## 데이터 전처리 방법
 
 - **HSV → ‘A’SV**
     
-    <img width="963" alt="스크린샷 2023-07-27 오후 1 26 42" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/8bc09a49-70a9-47c3-9814-6db680d14b5d">
+    <img width="1008" alt="스크린샷 2023-07-27 오후 1 26 42" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/8bc09a49-70a9-47c3-9814-6db680d14b5d">
+
 
     - 색공간 모델 중 세 가지 요소로 색을 표현하는 방식이며, 색상(Hue)은 [0, 255]의 값으로 색 종류를, 채도(Saturation)는 [0, 255]의 값으로 색의 밀도를, 명도(Value)는 [0, 255]의 값으로 색의 밝기를 표현한다.
     - 두 번째 그래프는 한 시점에서 시간이 흐름에 따라 달라지는 구름의 높이를 측정한 그래프를 나타낸다.
     - **색상**(Hue)은 비교적 비슷하여 Class 별로 비교하기 어렵지만, **채도**(Saturation)는 구름의 밀도 정보를 반영하고 있어 구름의 높이가 높을수록 채도가 높다는 것을 알 수 있으며, 이러한 기준으로 쌓여있는 구름이라고 표현할 수 있다.
     - **명도**(Value)는 구름의 밝기 정보를 반영하고 있어 인공위성 촬영 시점에서 바라봤을 때 구름의 평면이 넓을수록 명도가 높다는 것을 알 수 있으며, 이러한 기준으로 손을 잡고 있는 구름이라고 표현할 수 있다.
 
+  <br>
+
+
     <img width="1008" alt="스크린샷 2023-07-27 오후 1 27 07" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/76260c11-1633-4de1-b747-b76d90b93f08">
 
     - **Noise Image** : Dataset에는 인공위성 지지대, 태양빛과 같은 Noise가 존재하는 Image
     - **Adaptive Binarization Image** : 이미지의 각 픽셀을 이진화할 때 주변 픽셀의 평균값을 기준으로 0 또는 1으로 변환한 Image
+
+    <br>
   
     <img width="1018" alt="스크린샷 2023-07-27 오후 1 27 59" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/8523f8fe-1ebc-4133-955e-27c5fab0281d">
+
+
     
     - 기존의 색상(Hue) Image는 패턴 파악에 악영향을 주기 때문에 패턴 학습의 난이도를 낮추기 위해 Class 별로 비교하기 어려운 색상(Hue) Image를 기존의 Image에 Adaptive Mean Binarization을 적용한 **Adaptive Binarization Image**로 대체하여 이미지의 광도 불균일성이나 조명 변화와 같은 영향을 최소화하여 모델의 성능을 개선하였다.
 
+    <br>
+
+
 - **이외의 전처리[Gray-Scaling, Histogram Equalization, Zero-Centering]**
+
 
     <img width="1007" alt="스크린샷 2023-07-27 오후 1 28 29" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/0a23236d-b930-418a-bfe6-70451808c3aa">
 
     - **Histrogram Equalization Image** : 해당 이미지의 픽셀 값 빈도 분포를 균등하게 만드는데, 상대적으로 밝은 부분은 덜 밝은 부분보다 더 밝게, 덜 밝은 부분은 더 어둡게 만드는 것으로, 이미지의 대비를 개선해 시각적 품질을 향상시킨 Image
     - Adaptive Binary 이외에도 다양하게 전처리를 적용해 주었지만, 상대적으로 모델의 성능이 개선되지 않았다.
 
-- **Dataset Annotation 조정**
+<br>
+
+- **Dataset Labeling**
 
     <img width="1006" alt="스크린샷 2023-07-27 오후 1 29 03" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/ceb8c3f4-1a6f-40df-a6d3-b99628acd71b">
 
@@ -165,7 +208,7 @@
     - **Inference 결과**
         <img width="458" alt="스크린샷 2023-07-27 오후 1 35 42" src="https://github.com/Yu-Miri/Cloud_Classification_for_Weather_Forecast/assets/121469490/5eb7598a-af80-45df-acd4-7a34c31fec05">
         
-        - 비 날씨에 큰 영향을 미치는 Fish 구름은 중국 지역을 지나고 있기에 서울은 강수 확률이 낮을 것으로 예상
+        - 실제 4월 20일 북한 및 중국 지역에 Fish 구름이 포착되었고 실제 이 지역에는 비가 오고 있었다. 
 
 ## Installation
 
@@ -199,7 +242,6 @@ cd Cloud_Classification_For_Weather_Forecast
 
 ### Inference
 - Yolo v4 Inference
-~~~
 from inference import yolov4_inference
 yolov4_inference(img, './cfg/yolov4-custom_test.cfg', './data/cloud_data.data', './data/yolov4-custom_60.weights') 
 ~~~
