@@ -11,7 +11,7 @@
 - **기간** : 2023.04.01 ~ 2023.04.21 (약 3주)
 - **인원 구성** : 3명
 
-- **## :boy: My part**
+- ** :boy: My part**
     - Adaptive Binarization을 적용시킨 **Custom Dataset 생성**
     - **Dataset Annotation** 및 Gray-Scaling, Histogram Equalization, Zero-Centering를 적용하여 **데이터 전처리 작업**
     - 모델 복잡도에 따른 **모델 선정** 및 Anchor Box, max batch 조정을 통한 Yolo **모델 핸들링**
